@@ -20,6 +20,6 @@ exports.updateLog = async function (user_id, user_name, user_lastname = '') {
         console.log(err);
     }
     finally {
-        conn.release();
+        if (conn) conn.release();
     }
 }
