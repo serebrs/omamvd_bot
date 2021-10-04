@@ -6,7 +6,7 @@ const { messages } = require('./messages');
 const { latestNews } = require('./news');
 const { updateLog } = require('./dbpool');
 
-let newsText;
+let newsText = 'Не могу загрузить новости. Попробуйте позже.';
 
 const startScene = new BaseScene('START_SCENE');
 
@@ -42,7 +42,7 @@ startScene.action('5. ABITUR', async (ctx) => {
 });
 
 startScene.action('6. NEWS', async (ctx) => {
-    await ctx.replyWithHTML(messages.newsInfo + (newsText || 'Не могу загрузить новости. Попробуйте позже.'), backInlineKeyboard)
+    await ctx.replyWithHTML(messages.newsInfo + newsText, backInlineKeyboard)
         .then((res) => { ctx.session.myData.prevMessage = res.message_id });
     ctx.deleteMessage().catch((err) => console.log(err));
 });
@@ -88,8 +88,10 @@ bot.command('/start', (ctx) => {
 
 bot.launch();
 
-const job = cron.scheduleJob('*/20 * * * *', _ => { 
-    latestNews().then(res => { newsText = res || newsText });
+cron.scheduleJob('*/5 * * * *', () => { 
+    latestNews()
+        .then(res => { newsText = res || newsText })
+        .catch(err => console.log(err));
 });
 
 process.once('SIGINT', () => bot.stop('SIGINT'));
