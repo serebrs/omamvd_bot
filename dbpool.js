@@ -13,8 +13,8 @@ exports.updateLog = async function (user_id, user_name, user_lastname = '') {
     const last_datetime = new Date().getTime();
     try {
         conn = await pool.getConnection();
-        conn.query( { namedPlaceholders: true, sql: "INSERT INTO omabot (user_id, user_name, user_lastname, last_datetime) VALUES (:id, :name, :lastname, :datetime) ON DUPLICATE KEY UPDATE user_name = :name, user_lastname = :lastname, last_datetime = :datetime" },
-                    { id: user_id, name: user_name, lastname: user_lastname, datetime: last_datetime });
+        await conn.query( { namedPlaceholders: true, sql: "INSERT INTO omabot (user_id, user_name, user_lastname, last_datetime) VALUES (:id, :name, :lastname, :datetime) ON DUPLICATE KEY UPDATE user_name = :name, user_lastname = :lastname, last_datetime = :datetime" },
+                          { id: user_id, name: user_name, lastname: user_lastname, datetime: last_datetime });
     }
     catch (err) {
         console.log(err);
